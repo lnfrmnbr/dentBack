@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("/patients")
 class PatientController(private val service: PatientService) {
 
     @GetMapping

@@ -14,6 +14,7 @@ class UserRepository(private val jdbc: JdbcTemplate) {
             id = rs.getObject("id", UUID::class.java),
             email = rs.getString("email"),
             passwordHash = rs.getString("password_hash"),
+            salt = rs.getString("salt"),
             provider = rs.getString("provider"),
             providerId = rs.getString("provider_id"),
             doctorId = rs.getObject("doctor_id", UUID::class.java)
@@ -28,11 +29,12 @@ class UserRepository(private val jdbc: JdbcTemplate) {
 
     fun save(user: User): User {
         val id = jdbc.queryForObject(
-            "INSERT INTO users(email, password_hash, provider, provider_id, doctor_id) " +
-                    "VALUES (?, ?, ?, ?, ?) RETURNING id",
+            "INSERT INTO users(email, password_hash, salt, provider, provider_id, doctor_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
             user.email,
             user.passwordHash,
+            user.salt,
             user.provider,
             user.providerId,
             user.doctorId

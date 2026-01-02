@@ -5,7 +5,7 @@ import com.example.dent.service.AuthTokenService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/auth-tokens")
+@RequestMapping("/auth-tokens")
 class AuthTokenController(private val service: AuthTokenService) {
 
     @GetMapping("/{token}")

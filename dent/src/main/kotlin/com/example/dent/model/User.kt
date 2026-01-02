@@ -8,5 +8,6 @@ data class User(
     val passwordHash: String?,
     val provider: String = "local",
     val providerId: String?,
+    val salt: String,
     val doctorId: UUID
 )

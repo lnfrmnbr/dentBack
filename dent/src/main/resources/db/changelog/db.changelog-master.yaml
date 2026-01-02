@@ -1,0 +1,338 @@
+databaseChangeLog:
+  - changeSet:
+      id: 000-enable-uuid-extension
+      author: dental-app
+      changes:
+        - sql:
+            sql: |
+              CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+  # =========================
+  # DOCTORS
+  # =========================
+  - changeSet:
+      id: 001-create-doctors
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: doctors
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: text
+              - column:
+                  name: sex
+                  type: char(1)
+
+        - sql:
+            sql: |
+              ALTER TABLE doctors
+              ADD CONSTRAINT chk_doctors_sex
+              CHECK (sex IN ('M','F'));
+
+  # =========================
+  # PATIENTS
+  # =========================
+  - changeSet:
+      id: 002-create-patients
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: patients
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sex
+                  type: char(1)
+
+        - sql:
+            sql: |
+              ALTER TABLE patients
+              ADD CONSTRAINT chk_patients_sex
+              CHECK (sex IN ('M','F'));
+
+  # =========================
+  # DOCTOR_PATIENT
+  # =========================
+  - changeSet:
+      id: 003-create-doctor-patient
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: doctor_patient
+            columns:
+              - column:
+                  name: doctor_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: patient_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: doctor_patient
+            columnNames: doctor_id, patient_id
+            constraintName: pk_doctor_patient
+
+        - addForeignKeyConstraint:
+            baseTableName: doctor_patient
+            baseColumnNames: doctor_id
+            referencedTableName: doctors
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_doctor_patient_doctor
+
+        - addForeignKeyConstraint:
+            baseTableName: doctor_patient
+            baseColumnNames: patient_id
+            referencedTableName: patients
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_doctor_patient_patient
+
+  # =========================
+  # APPOINTMENTS
+  # =========================
+  - changeSet:
+      id: 004-create-appointments
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: appointments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: doctor_id
+                  type: uuid
+              - column:
+                  name: patient_id
+                  type: uuid
+              - column:
+                  name: date
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bop
+                  type: numeric(5,2)
+              - column:
+                  name: russel
+                  type: numeric(5,2)
+              - column:
+                  name: api
+                  type: numeric(5,2)
+              - column:
+                  name: chart
+                  type: jsonb
+              - column:
+                  name: file_url
+                  type: text
+
+        - addForeignKeyConstraint:
+            baseTableName: appointments
+            baseColumnNames: doctor_id
+            referencedTableName: doctors
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_appointments_doctor
+
+        - addForeignKeyConstraint:
+            baseTableName: appointments
+            baseColumnNames: patient_id
+            referencedTableName: patients
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_appointments_patient
+
+  # =========================
+  # USERS
+  # =========================
+  - changeSet:
+      id: 005-create-users
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: text
+              - column:
+                  name: salt
+                  type: text
+              - column:
+                  name: provider
+                  type: text
+                  defaultValue: local
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_id
+                  type: text
+              - column:
+                  name: doctor_id
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: doctor_id
+            referencedTableName: doctors
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_users_doctor
+
+        - sql:
+            sql: |
+              ALTER TABLE users
+              ADD CONSTRAINT chk_users_provider
+              CHECK (provider IN ('local','google'));
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email_provider
+            unique: true
+            columns:
+              - column:
+                  name: email
+              - column:
+                  name: provider
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_doctor_id
+            columns:
+              - column:
+                  name: doctor_id
+
+  # =========================
+  # AUTH TOKENS
+  # =========================
+  - changeSet:
+      id: 006-create-auth-tokens
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: auth_tokens
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token_type
+                  type: text
+                  defaultValue: refresh
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+              - column:
+                  name: revoked_at
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: auth_tokens
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_auth_tokens_user
+
+        - sql:
+            sql: |
+              ALTER TABLE auth_tokens
+              ADD CONSTRAINT chk_auth_tokens_type
+              CHECK (token_type IN ('access','refresh'));
+
+        - createIndex:
+            tableName: auth_tokens
+            indexName: idx_auth_tokens_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: auth_tokens
+            indexName: idx_auth_tokens_token
+            unique: true
+            columns:
+              - column:
+                  name: token
