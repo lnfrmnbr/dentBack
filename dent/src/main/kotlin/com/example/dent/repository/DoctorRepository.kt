@@ -14,7 +14,9 @@ class DoctorRepository(private val jdbc: JdbcTemplate) {
             id = rs.getObject("id", UUID::class.java),
             fullName = rs.getString("full_name"),
             firstName = rs.getString("first_name"),
-            sex = rs.getString("sex")
+            sex = rs.getString("sex"),
+            role = rs.getString("role"),
+            birthDate = rs.getDate("birth_date")
         )
     }
 
@@ -24,13 +26,27 @@ class DoctorRepository(private val jdbc: JdbcTemplate) {
     fun findById(id: UUID): Doctor? =
         jdbc.query("SELECT * FROM doctors WHERE id = ?", mapper, id).firstOrNull()
 
+    fun getByUserId(userId: UUID): Doctor? =
+        jdbc.query(
+            """
+        SELECT d.* 
+        FROM doctors d
+        JOIN users u ON d.id = u.doctor_id
+        WHERE u.id = ?
+        """,
+            mapper,
+            userId
+        ).firstOrNull()
+
     fun save(doctor: Doctor): Doctor {
         val id = jdbc.queryForObject(
-            "INSERT INTO doctors(full_name, first_name, sex) VALUES (?, ?, ?) RETURNING id",
+            "INSERT INTO doctors(full_name, first_name, sex, role, birth_date) VALUES (?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
             doctor.fullName,
             doctor.firstName,
-            doctor.sex
+            doctor.sex,
+            doctor.role,
+            doctor.birthDate
         )
         return doctor.copy(id = id)
     }

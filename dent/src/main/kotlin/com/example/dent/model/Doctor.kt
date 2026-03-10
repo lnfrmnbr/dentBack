@@ -6,5 +6,7 @@ data class Doctor(
     val id: UUID? = null,
     val fullName: String,
     val firstName: String?,
-    val sex: String?
+    val sex: String?,
+    val role: String,
+    val birthDate: Date
 )

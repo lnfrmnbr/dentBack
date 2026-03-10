@@ -15,6 +15,9 @@ class DoctorController(private val service: DoctorService) {
     @GetMapping("/{id}")
     fun getById(@PathVariable id: UUID): Doctor? = service.getById(id)
 
+    @GetMapping("/by_user/{userId}")
+    fun getByUserId(@PathVariable userId: UUID): Doctor? = service.getByUserId(userId)
+
     @PostMapping
     fun create(@RequestBody doctor: Doctor): Doctor = service.create(doctor)
 }

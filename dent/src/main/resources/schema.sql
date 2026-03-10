@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS doctors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name TEXT NOT NULL,
     first_name TEXT,
+    role TEXT NOT NULL,
+    birth_date DATE NOT NULL,
     sex CHAR(1) CHECK (sex IN ('M', 'F'))
 );
 

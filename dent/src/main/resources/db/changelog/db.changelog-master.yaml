@@ -35,6 +35,16 @@ databaseChangeLog:
               - column:
                   name: sex
                   type: char(1)
+              - column:
+                  name: role
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
 
         - sql:
             sql: |

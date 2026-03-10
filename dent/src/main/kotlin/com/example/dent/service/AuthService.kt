@@ -25,7 +25,9 @@ class UserService(
         rawPassword: String,
         fullName: String,
         firstName: String?,
-        sex: String?
+        sex: String?,
+        role: String,
+        birthDate: Date
     ): Tokens {
         val salt = BCrypt.gensalt()
         val passwordHash = BCrypt.hashpw(rawPassword, salt)
@@ -34,7 +36,9 @@ class UserService(
             Doctor(
                 firstName = firstName,
                 fullName = fullName,
-                sex = sex
+                sex = sex,
+                role = role,
+                birthDate = birthDate
             )
         ).id
 
