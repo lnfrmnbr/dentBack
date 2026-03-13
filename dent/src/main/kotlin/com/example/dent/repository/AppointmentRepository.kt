@@ -16,6 +16,7 @@ class AppointmentRepository(private val jdbc: JdbcTemplate) {
             doctorId = rs.getObject("doctor_id", UUID::class.java),
             patientId = rs.getObject("patient_id", UUID::class.java),
             date = rs.getTimestamp("date").toLocalDateTime(),
+            tags = parseTags(rs.getString("tags")),
             bop = rs.getDouble("bop").takeIf { !rs.wasNull() },
             russel = rs.getDouble("russel").takeIf { !rs.wasNull() },
             api = rs.getDouble("api").takeIf { !rs.wasNull() },
@@ -31,12 +32,13 @@ class AppointmentRepository(private val jdbc: JdbcTemplate) {
 
     fun save(app: Appointment): Appointment {
         val id = jdbc.queryForObject(
-            "INSERT INTO appointments(doctor_id, patient_id, date, bop, russel, api, chart, file_url) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
+            "INSERT INTO appointments(doctor_id, patient_id, date, tags, bop, russel, api, chart, file_url) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
             app.doctorId,
             app.patientId,
             Timestamp.valueOf(app.date),
+            app.tags.joinToString(","),
             app.bop,
             app.russel,
             app.api,
@@ -44,5 +46,18 @@ class AppointmentRepository(private val jdbc: JdbcTemplate) {
             app.fileUrl
         )
         return app.copy(id = id)
+    }
+
+    private fun parseTags(raw: String?): List<String> {
+        return if (raw.isNullOrBlank()) {
+            emptyList()
+        } else {
+            raw
+                .removePrefix("{")
+                .removeSuffix("}")
+                .split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+        }
     }
 }

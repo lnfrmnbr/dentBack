@@ -161,6 +161,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: tags
+                  type: text
+              - column:
                   name: bop
                   type: numeric(5,2)
               - column:

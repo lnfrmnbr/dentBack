@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE SET NULL,
     patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE SET NULL,
     date TIMESTAMP NOT NULL DEFAULT NOW(),
+    tags text,
     bop NUMERIC(5,2),
     russel NUMERIC(5,2),
     api NUMERIC(5,2),

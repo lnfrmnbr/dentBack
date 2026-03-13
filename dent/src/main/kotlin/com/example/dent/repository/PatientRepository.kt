@@ -13,7 +13,7 @@ class PatientRepository(private val jdbc: JdbcTemplate) {
         Patient(
             id = rs.getObject("id", UUID::class.java),
             fullName = rs.getString("full_name"),
-            birthDate = rs.getString("birth_date"),
+            birthDate = rs.getDate("birth_date"),
             sex = rs.getString("sex")
         )
     }

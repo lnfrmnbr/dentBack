@@ -8,9 +8,10 @@ data class Appointment(
     val doctorId: UUID,
     val patientId: UUID,
     val date: LocalDateTime = LocalDateTime.now(),
-    val bop: Double?,
-    val russel: Double?,
-    val api: Double?,
-    val chart: String?,   // JSONB как строка
-    val fileUrl: String?
+    val tags: List<String>,
+    val bop: Double? = null,
+    val russel: Double? = null,
+    val api: Double? = null,
+    val chart: String? = null,
+    val fileUrl: String? = null
 )
