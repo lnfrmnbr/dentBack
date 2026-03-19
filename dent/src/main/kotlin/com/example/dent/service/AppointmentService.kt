@@ -7,7 +7,7 @@ import java.util.*
 
 @Service
 class AppointmentService(private val repo: AppointmentRepository) {
-    fun getAll(): List<Appointment> = repo.findAll()
+    fun findAllForDoctor(doctorId: UUID): List<Appointment> = repo.findAllForDoctor(doctorId)
     fun getById(id: UUID): Appointment? = repo.findById(id)
     fun create(app: Appointment): Appointment = repo.save(app)
 }
