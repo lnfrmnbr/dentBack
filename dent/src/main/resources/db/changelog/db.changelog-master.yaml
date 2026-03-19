@@ -25,12 +25,15 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: full_name
+                  name: last_name
                   type: text
                   constraints:
                     nullable: false
               - column:
                   name: first_name
+                  type: text
+              - column:
+                  name: patronymic
                   type: text
               - column:
                   name: sex

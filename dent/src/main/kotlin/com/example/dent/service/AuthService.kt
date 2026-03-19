@@ -23,8 +23,9 @@ class UserService(
     fun register(
         email: String,
         rawPassword: String,
-        fullName: String,
-        firstName: String?,
+        lastName: String,
+        firstName: String,
+        patronymic: String?,
         sex: String?,
         role: String,
         birthDate: Date
@@ -35,7 +36,8 @@ class UserService(
         val doctorId = doctorRepository.save(
             Doctor(
                 firstName = firstName,
-                fullName = fullName,
+                lastName = lastName,
+                patronymic = patronymic,
                 sex = sex,
                 role = role,
                 birthDate = birthDate

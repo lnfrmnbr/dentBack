@@ -49,6 +49,32 @@ class AppointmentRepository(private val jdbc: JdbcTemplate) {
         }, doctorId)
     }
 
+    fun findUpcomingForDoctor(doctorId: UUID): List<Appointment> {
+        val sql = """
+        SELECT a.id AS appointment_id, 
+               a.doctor_id, 
+               a.patient_id, 
+               p.full_name AS patient_full_name, 
+               a.date, a.tags
+        FROM appointments a
+        JOIN patients p ON a.patient_id = p.id
+        WHERE a.doctor_id = ?
+          AND a.date >= CURRENT_DATE
+        ORDER BY a.date ASC
+        LIMIT 10
+    """
+
+        return jdbc.query(sql, { rs, _ ->
+            Appointment(
+                id = rs.getObject("appointment_id", UUID::class.java),
+                doctorId = rs.getObject("doctor_id", UUID::class.java),
+                patientId = rs.getObject("patient_id", UUID::class.java),
+                patientFullName = rs.getString("patient_full_name"),
+                date = rs.getTimestamp("date").toLocalDateTime(),
+                tags = parseTags(rs.getString("tags"))
+            )
+        }, doctorId)
+    }
 
     fun findById(id: UUID): Appointment? =
         jdbc.query("SELECT * FROM appointments WHERE id = ?", mapper, id).firstOrNull()

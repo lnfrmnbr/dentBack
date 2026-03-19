@@ -9,8 +9,11 @@ import java.util.*
 @RequestMapping("/appointments")
 class AppointmentController(private val service: AppointmentService) {
 
-    @GetMapping("/forDoc/{doctorId}")
+    @GetMapping("/for_doc/{doctorId}")
     fun findAllForDoctor(@PathVariable doctorId: UUID): List<Appointment> = service.findAllForDoctor(doctorId)
+
+    @GetMapping("/upcoming/{doctorId}")
+    fun findUpcomingForDoctor(@PathVariable doctorId: UUID): List<Appointment> = service.findUpcomingForDoctor(doctorId)
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: UUID): Appointment? = service.getById(id)
