@@ -9,7 +9,7 @@ data class Appointment(
     val patientId: UUID,
     val patientFullName: String? = null,
     val date: LocalDateTime = LocalDateTime.now(),
-    val tags: List<String>,
+    val tags: List<String>? = null,
     val bop: Double? = null,
     val russel: Double? = null,
     val api: Double? = null,

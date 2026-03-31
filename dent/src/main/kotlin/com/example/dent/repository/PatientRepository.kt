@@ -14,7 +14,9 @@ class PatientRepository(private val jdbc: JdbcTemplate) {
             id = rs.getObject("id", UUID::class.java),
             fullName = rs.getString("full_name"),
             birthDate = rs.getDate("birth_date"),
-            sex = rs.getString("sex")
+            sex = rs.getString("sex"),
+            email = rs.getString("email"),
+            phoneNumber = rs.getString("phone_number")
         )
     }
 
@@ -25,11 +27,13 @@ class PatientRepository(private val jdbc: JdbcTemplate) {
 
     fun save(patient: Patient): Patient {
         val id = jdbc.queryForObject(
-            "INSERT INTO patients(full_name, birth_date, sex) VALUES (?, ?, ?) RETURNING id",
+            "INSERT INTO patients(full_name, birth_date, sex, email, phone_number) VALUES (?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
             patient.fullName,
             patient.birthDate,
-            patient.sex
+            patient.sex,
+            patient.email,
+            patient.phoneNumber
         )
         return patient.copy(id = id)
     }

@@ -15,6 +15,9 @@ class AppointmentController(private val service: AppointmentService) {
     @GetMapping("/upcoming/{doctorId}")
     fun findUpcomingForDoctor(@PathVariable doctorId: UUID): List<Appointment> = service.findUpcomingForDoctor(doctorId)
 
+    @GetMapping("/archive/{doctorId}")
+    fun findArchiveForDoctor(@PathVariable doctorId: UUID): List<Appointment> = service.findArchiveForDoctor(doctorId)
+
     @GetMapping("/{id}")
     fun getById(@PathVariable id: UUID): Appointment? = service.getById(id)
 
