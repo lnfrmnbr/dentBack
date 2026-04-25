@@ -1,5 +1,16 @@
+CREATE TABLE IF NOT EXISTS clinics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    logo TEXT,
+    org_name TEXT NOT NULL,
+    short_name TEXT,
+    contacts TEXT,
+    address TEXT,
+    email TEXT
+);
+
 CREATE TABLE IF NOT EXISTS doctors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clinic_id UUID REFERENCES clinics(id) ON DELETE SET NULL,
     last_name TEXT NOT NULL,
     first_name TEXT,
     patronymic TEXT,
@@ -10,17 +21,12 @@ CREATE TABLE IF NOT EXISTS doctors (
 
 CREATE TABLE IF NOT EXISTS patients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clinic_id UUID REFERENCES clinics(id) ON DELETE SET NULL,
     full_name TEXT NOT NULL,
     birth_date DATE NOT NULL,
     sex CHAR(1) CHECK (sex IN ('M', 'F')),
     email TEXT,
     phone_number TEXT
-);
-
-CREATE TABLE IF NOT EXISTS doctor_patient (
-    doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
-    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    PRIMARY KEY (doctor_id, patient_id)
 );
 
 CREATE TABLE IF NOT EXISTS appointments (
@@ -42,8 +48,6 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT,
     salt TEXT,
-    provider TEXT NOT NULL DEFAULT 'local' CHECK (provider IN ('local', 'google')),
-    provider_id TEXT,
 
     doctor_id UUID UNIQUE REFERENCES doctors(id) ON DELETE CASCADE,
 
@@ -66,9 +70,12 @@ CREATE TABLE IF NOT EXISTS auth_tokens (
     revoked_at TIMESTAMP
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_provider
-    ON users (email, provider);
-
 CREATE INDEX IF NOT EXISTS idx_users_doctor_id
     ON users (doctor_id);
+
+CREATE INDEX IF NOT EXISTS idx_doctors_clinic_id
+    ON doctors (clinic_id);
+
+CREATE INDEX IF NOT EXISTS idx_patients_clinic_id
+    ON patients (clinic_id);
 

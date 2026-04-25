@@ -8,10 +8,48 @@ databaseChangeLog:
               CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
   # =========================
+  # CLINICS
+  # =========================
+  - changeSet:
+      id: 001-create-clinics
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: clinics
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: logo
+                  type: text
+              - column:
+                  name: org_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: short_name
+                  type: text
+              - column:
+                  name: contacts
+                  type: text
+              - column:
+                  name: address
+                  type: text
+              - column:
+                  name: email
+                  type: text
+
+  # =========================
   # DOCTORS
   # =========================
   - changeSet:
-      id: 001-create-doctors
+      id: 002-create-doctors
       author: dental-app
       changes:
         - createTable:
@@ -25,6 +63,9 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: clinic_id
+                  type: uuid
+              - column:
                   name: last_name
                   type: text
                   constraints:
@@ -36,9 +77,6 @@ databaseChangeLog:
                   name: patronymic
                   type: text
               - column:
-                  name: sex
-                  type: char(1)
-              - column:
                   name: role
                   type: text
                   constraints:
@@ -48,6 +86,17 @@ databaseChangeLog:
                   type: date
                   constraints:
                     nullable: false
+              - column:
+                  name: sex
+                  type: char(1)
+
+        - addForeignKeyConstraint:
+            baseTableName: doctors
+            baseColumnNames: clinic_id
+            referencedTableName: clinics
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_doctors_clinic
 
         - sql:
             sql: |
@@ -55,11 +104,18 @@ databaseChangeLog:
               ADD CONSTRAINT chk_doctors_sex
               CHECK (sex IN ('M','F'));
 
+        - createIndex:
+            tableName: doctors
+            indexName: idx_doctors_clinic_id
+            columns:
+              - column:
+                  name: clinic_id
+
   # =========================
   # PATIENTS
   # =========================
   - changeSet:
-      id: 002-create-patients
+      id: 003-create-patients
       author: dental-app
       changes:
         - createTable:
@@ -72,6 +128,9 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
+              - column:
+                  name: clinic_id
+                  type: uuid
               - column:
                   name: full_name
                   type: text
@@ -96,53 +155,26 @@ databaseChangeLog:
                   constraints:
                     nullable: true
 
+        - addForeignKeyConstraint:
+            baseTableName: patients
+            baseColumnNames: clinic_id
+            referencedTableName: clinics
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_patients_clinic
+
         - sql:
             sql: |
               ALTER TABLE patients
               ADD CONSTRAINT chk_patients_sex
               CHECK (sex IN ('M','F'));
 
-  # =========================
-  # DOCTOR_PATIENT
-  # =========================
-  - changeSet:
-      id: 003-create-doctor-patient
-      author: dental-app
-      changes:
-        - createTable:
-            tableName: doctor_patient
+        - createIndex:
+            tableName: patients
+            indexName: idx_patients_clinic_id
             columns:
               - column:
-                  name: doctor_id
-                  type: uuid
-                  constraints:
-                    nullable: false
-              - column:
-                  name: patient_id
-                  type: uuid
-                  constraints:
-                    nullable: false
-
-        - addPrimaryKey:
-            tableName: doctor_patient
-            columnNames: doctor_id, patient_id
-            constraintName: pk_doctor_patient
-
-        - addForeignKeyConstraint:
-            baseTableName: doctor_patient
-            baseColumnNames: doctor_id
-            referencedTableName: doctors
-            referencedColumnNames: id
-            onDelete: CASCADE
-            constraintName: fk_doctor_patient_doctor
-
-        - addForeignKeyConstraint:
-            baseTableName: doctor_patient
-            baseColumnNames: patient_id
-            referencedTableName: patients
-            referencedColumnNames: id
-            onDelete: CASCADE
-            constraintName: fk_doctor_patient_patient
+                  name: clinic_id
 
   # =========================
   # APPOINTMENTS
@@ -237,15 +269,6 @@ databaseChangeLog:
                   name: salt
                   type: text
               - column:
-                  name: provider
-                  type: text
-                  defaultValue: local
-                  constraints:
-                    nullable: false
-              - column:
-                  name: provider_id
-                  type: text
-              - column:
                   name: doctor_id
                   type: uuid
               - column:
@@ -265,21 +288,13 @@ databaseChangeLog:
             onDelete: CASCADE
             constraintName: fk_users_doctor
 
-        - sql:
-            sql: |
-              ALTER TABLE users
-              ADD CONSTRAINT chk_users_provider
-              CHECK (provider IN ('local','google'));
-
         - createIndex:
             tableName: users
-            indexName: idx_users_email_provider
+            indexName: idx_users_email
             unique: true
             columns:
               - column:
                   name: email
-              - column:
-                  name: provider
 
         - createIndex:
             tableName: users

@@ -19,7 +19,7 @@ class AuthController(private val service: UserService) {
 
     @PostMapping("/register")
     fun create(@RequestBody req: RegisterRequest): ResponseEntity<Any> {
-        val tokens = service.register(req.email, req.password, req.lastName, req.firstName, req.patronymic, req.sex, req.role, req.birthDate)
+        val tokens = service.register(req.email, req.password, req.lastName, req.firstName, req.patronymic, req.sex, req.role, req.birthDate, req.clinicId)
         return ResponseEntity.ok(tokens)
     }
 
@@ -42,7 +42,8 @@ class AuthController(private val service: UserService) {
         val patronymic: String?,
         val sex: String?,
         val role: String,
-        val birthDate: Date
+        val birthDate: Date,
+        val clinicId: UUID
     )
 
     data class LoginRequest(val email: String, val password: String)

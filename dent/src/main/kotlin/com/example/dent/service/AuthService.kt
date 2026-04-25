@@ -28,8 +28,9 @@ class UserService(
         patronymic: String?,
         sex: String?,
         role: String,
-        birthDate: Date
-    ): Tokens {
+        birthDate: Date,
+        clinicId: UUID
+        ): Tokens {
         val salt = BCrypt.gensalt()
         val passwordHash = BCrypt.hashpw(rawPassword, salt)
 
@@ -40,7 +41,8 @@ class UserService(
                 patronymic = patronymic,
                 sex = sex,
                 role = role,
-                birthDate = birthDate
+                birthDate = birthDate,
+                clinicId = clinicId
             )
         ).id
 
@@ -48,8 +50,7 @@ class UserService(
             email = email,
             doctorId = doctorId!!,
             passwordHash = passwordHash,
-            salt = salt,
-            providerId = null
+            salt = salt
         ))
 
         return generateTokens(user)

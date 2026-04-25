@@ -12,6 +12,7 @@ class DoctorRepository(private val jdbc: JdbcTemplate) {
     private val mapper: RowMapper<Doctor> = RowMapper { rs, _ ->
         Doctor(
             id = rs.getObject("id", UUID::class.java),
+            clinicId = rs.getObject("clinic_id", UUID::class.java),
             lastName = rs.getString("last_name"),
             firstName = rs.getString("first_name"),
             patronymic = rs.getString("patronymic"),
@@ -41,8 +42,9 @@ class DoctorRepository(private val jdbc: JdbcTemplate) {
 
     fun save(doctor: Doctor): Doctor {
         val id = jdbc.queryForObject(
-            "INSERT INTO doctors(last_name, first_name, patronymic, sex, role, birth_date) VALUES (?, ?, ?, ?, ?, ?) RETURNING id",
+            "INSERT INTO doctors(clinic_id, last_name, first_name, patronymic, sex, role, birth_date) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
+            doctor.clinicId,
             doctor.lastName,
             doctor.firstName,
             doctor.patronymic,

@@ -12,6 +12,7 @@ class PatientRepository(private val jdbc: JdbcTemplate) {
     private val mapper: RowMapper<Patient> = RowMapper { rs, _ ->
         Patient(
             id = rs.getObject("id", UUID::class.java),
+            clinicId = rs.getObject("clinic_id", UUID::class.java),
             fullName = rs.getString("full_name"),
             birthDate = rs.getDate("birth_date"),
             sex = rs.getString("sex"),
@@ -27,8 +28,9 @@ class PatientRepository(private val jdbc: JdbcTemplate) {
 
     fun save(patient: Patient): Patient {
         val id = jdbc.queryForObject(
-            "INSERT INTO patients(full_name, birth_date, sex, email, phone_number) VALUES (?, ?, ?, ?, ?) RETURNING id",
+            "INSERT INTO patients(clinic_id, full_name, birth_date, sex, email, phone_number) VALUES (?, ?, ?, ?, ?, ?) RETURNING id",
             UUID::class.java,
+            patient.clinicId,
             patient.fullName,
             patient.birthDate,
             patient.sex,

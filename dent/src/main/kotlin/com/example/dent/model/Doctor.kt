@@ -4,6 +4,7 @@ import java.util.*
 
 data class Doctor(
     val id: UUID? = null,
+    val clinicId: UUID?,
     val lastName: String,
     val firstName: String,
     val patronymic: String?,
