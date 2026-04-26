@@ -209,20 +209,26 @@ databaseChangeLog:
                   name: tags
                   type: text
               - column:
-                  name: bop
-                  type: numeric(5,2)
+                  name: diagnosis
+                  type: text
               - column:
-                  name: russel
-                  type: numeric(5,2)
+                  name: complaints
+                  type: text
               - column:
-                  name: api
-                  type: numeric(5,2)
+                  name: comments
+                  type: text
+              - column:
+                  name: plan
+                  type: text
+              - column:
+                  name: is_first
+                  type: boolean
+              - column:
+                  name: indexes
+                  type: jsonb
               - column:
                   name: chart
                   type: jsonb
-              - column:
-                  name: file_url
-                  type: text
 
         - addForeignKeyConstraint:
             baseTableName: appointments

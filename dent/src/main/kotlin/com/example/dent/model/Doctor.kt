@@ -10,5 +10,6 @@ data class Doctor(
     val patronymic: String?,
     val sex: String?,
     val role: String,
-    val birthDate: Date
+    val birthDate: Date,
+    val clinic: Clinic? = null
 )

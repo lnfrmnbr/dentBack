@@ -35,11 +35,13 @@ CREATE TABLE IF NOT EXISTS appointments (
     patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE SET NULL,
     date TIMESTAMP NOT NULL DEFAULT NOW(),
     tags text,
-    bop NUMERIC(5,2),
-    russel NUMERIC(5,2),
-    api NUMERIC(5,2),
-    chart JSONB,
-    file_url TEXT
+    diagnosis text,
+    complaints text,
+    comments text,
+    plan text,
+    is_first BOOLEAN ,
+    indexes JSONB
+    chart JSONB
 );
 
 CREATE TABLE IF NOT EXISTS users (
