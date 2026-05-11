@@ -383,3 +383,76 @@ databaseChangeLog:
             columns:
               - column:
                   name: token
+  # =========================
+  # CLINIC VERIFICATION CODES
+  # =========================
+  - changeSet:
+      id: 007-create-clinic-verification-codes
+      author: dental-app
+      changes:
+        - createTable:
+            tableName: clinic_verification_code
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: clinic_id
+                  type: uuid
+
+              - column:
+                  name: code
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: text
+
+              - column:
+                  name: expires_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: verified
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: clinic_verification_code
+            baseColumnNames: clinic_id
+            referencedTableName: clinics
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_clinic_verification_code_clinic
+
+        - createIndex:
+            tableName: clinic_verification_code
+            indexName: idx_clinic_verification_code_clinic_id
+            columns:
+              - column:
+                  name: clinic_id
+
+        - createIndex:
+            tableName: clinic_verification_code
+            indexName: idx_clinic_verification_code_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: clinic_verification_code
+            indexName: idx_clinic_verification_code_email
+            columns:
+              - column:
+                  name: email

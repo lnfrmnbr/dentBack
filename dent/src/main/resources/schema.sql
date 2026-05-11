@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     complaints text,
     comments text,
     plan text,
-    is_first BOOLEAN ,
+    is_first BOOLEAN,
     indexes JSONB
     chart JSONB
 );
@@ -70,6 +70,15 @@ CREATE TABLE IF NOT EXISTS auth_tokens (
 
     created_at TIMESTAMP DEFAULT NOW(),
     revoked_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS clinic_verification_code (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clinic_id UUID REFERENCES clinics(id) ON DELETE SET NULL,
+    code TEXT NOT NULL,
+    email TEXT,
+    expires_at TIMESTAMP NOT NULL,
+    verified BOOLEAN,
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_doctor_id
