@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Service
-
 class ClinicVerificationCodeService(
     private val repo: ClinicVerificationCodeRepository,
     private val emailService: EmailService
@@ -32,3 +31,4 @@ class ClinicVerificationCodeService(
         return repo.checkVerificationCode(clinicId, newUserEmail, code)
     }
 }
+
