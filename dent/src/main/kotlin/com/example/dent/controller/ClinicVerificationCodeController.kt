@@ -12,7 +12,7 @@ class ClinicVerificationCodeController(private val service: ClinicVerificationCo
     fun getVerificationCode(@RequestBody req: GetVerificationCodeRequest) =
         service.getVerificationCode(req.clinicId, req.fio, req.newUserEmail, req.clinicEmail)
 
-    @GetMapping("/check")
+    @PostMapping("/check")
     fun checkVerificationCode(@RequestBody req: VerifyCodeRequest): Boolean =
         service.checkVerificationCode(req.clinicId, req.newUserEmail, req.code)
 
